@@ -1,4 +1,32 @@
+
 rule final:
+	input:
+		"final.tsv", "gene_orientation.tsv"
+
+
+rule count_codon:
+	input:
+		"final.fa"
+	output:
+		"final.tsv"
+	shell:
+		"cat {input} | awk -f scripts/count_codon.awk > {output}"
+
+rule genelist_orientation:
+	input:
+		forward="translate.forward.tab",
+		reverse="translate.reverse.tab"
+	output:
+		final     = "gene_orientation.tsv",
+		unsorted  = temp("unsorted.tsv")
+	shell:
+		"cat {input.forward}|cut -f1|sort |uniq|awk \'BEGIN{{OFS=\"\t\"}}{{print $0,\"+\"}}\' >  {output.unsorted};"
+		"cat {input.reverse}|cut -f1|sort |uniq|awk \'BEGIN{{OFS=\"\t\"}}{{print $0,\"-\"}}\' >> {output.unsorted};"
+		"sort -k1 {output.unsorted} > {output.final}"
+
+
+
+rule combine:
 	input:
 		f = "translate.forward.fa",
 		r = "translate.reverse.rev.fa"
