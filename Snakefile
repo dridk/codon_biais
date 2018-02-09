@@ -1,7 +1,7 @@
 
 rule final:
 	input:
-		"final.tsv", "gene_orientation.tsv"
+		"final.dedup.tsv", "gene_orientation.tsv"
 
 
 rule dedup:
@@ -17,9 +17,9 @@ rule count_codon:
 	input:
 		"final.dedup.fa"
 	output:
-		"final.tsv"
+		"final.dedup.tsv"
 	shell:
-		"cat {input} | awk -f scripts/count_codon.awk > {output}"
+		"python scripts/count_codon.py {input} > {output}"
 
 rule genelist_orientation:
 	input:
@@ -42,7 +42,7 @@ rule combine:
 	output:
 		"final.fa"
 	shell:
-		"cat {input} > {output}"
+		"cat {input.f} {input.r} > {output}"
 
 rule translate:
 	input:

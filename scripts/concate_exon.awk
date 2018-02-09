@@ -13,3 +13,7 @@ BEGIN{
 	printf "%s", $2
 
 }
+
+END {
+	print "\n"
+}
