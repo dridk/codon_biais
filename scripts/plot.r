@@ -1,4 +1,3 @@
-
 library(ggplot2)
 library(ade4)
 library(dplyr)
@@ -12,7 +11,7 @@ d = merge(x=codons, y = orient, by='gene')
 d$X=NULL
 
 t = subset(d, !duplicated(d$gene))
-
+rownames(t)  = t$gene
 
 
 
@@ -27,7 +26,10 @@ heat = heat / rowSums(heat)
 
 heat.m = as.matrix(heat)
 
-heatmap(head(heat.m, 5000), labRow = F)
+heat.s = heat.m 
+rownames(heat.s) = t$sens
+
+heatmap(heat.s[sample(1:nrow(heat.s), 100),], labRow = T)
 
 heat.stop = heat.m [,c('TAG','TAA','TGA')]
 
@@ -36,7 +38,10 @@ heat.stop = heat.m [,c('TAG','TAA','TGA')]
 # kmeans 
 pca = prcomp(heat.m)
 
-plot(pca$x[,1:2], col=t$sens)
+plot(pca$x[,1:2], pch="+")
+
+text( pca$x[,1], pca$x[,2], rownames( heat.m ), pos= 3 )
+
 biplot(pca)
 
 # d = codons
@@ -57,3 +62,13 @@ ggdata$codon2 = factor(ggdata$codon, levels = ggdata$codon)
 
 g = ggplot(ggdata, aes(x = codon2, y = count, fill=aa))
 g + geom_bar(stat="identity")+theme(axis.text = element_text(angle=90)) + scale_fill_manual( values=c(colors(distinct=T)))
+
+# subset 
+
+stop = t 
+stop$sens = NULL
+stop$gene = NULL
+
+
+stop = stop[,c('TAA', 'TAG','TGA')]
+

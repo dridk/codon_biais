@@ -4,9 +4,18 @@ rule final:
 		"final.tsv", "gene_orientation.tsv"
 
 
+rule dedup:
+	input:
+		"{filename}.fa"
+	output:
+		"{filename}.dedup.fa"
+	shell:
+		"seqkit rmdup {input} > {output}"
+
+
 rule count_codon:
 	input:
-		"final.fa"
+		"final.dedup.fa"
 	output:
 		"final.tsv"
 	shell:
